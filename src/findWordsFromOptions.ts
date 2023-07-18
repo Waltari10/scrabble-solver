@@ -16,17 +16,18 @@ type CharMap = Record<string, number>;
  * For example: Inputs { o: 2, g: 1, d: 1 } and { o: 1, d: 1 } would return true, but
  * { o: 2, g: 1, d: 1 } and { o: 1, d: 2 } would return false
  */
-const isCharMapContainedInCharMap = (charMap1: CharMap, charMap2: CharMap): boolean => {
-    let charMapIsContainedInCharMap = true;
+const isWordCharMapContainedInInputCharMap = (inputCharMap: CharMap, wordCharMap: CharMap): boolean => {
+    let wordCharMapIsContainedInInputCharMap = true;
 
-    for (const char in charMap2) {
-        const charMapHasEnoughOfCharacter = charMap1[char] >= charMap2[char];
+    for (const char in wordCharMap) {
+        const inputCharMapHasEnoughOfCharacter = inputCharMap[char] >= wordCharMap[char];
 
-        if (!charMapHasEnoughOfCharacter) {
-            charMapIsContainedInCharMap = false;
+        if (!inputCharMapHasEnoughOfCharacter) {
+            wordCharMapIsContainedInInputCharMap = false;
+            continue;
         }
     }
-    return charMapIsContainedInCharMap;
+    return wordCharMapIsContainedInInputCharMap;
 }
 
 
@@ -59,7 +60,7 @@ export const findWordsFromOptions = (input: string, wordOptions: string[], caseS
     if (input.length === 0) return [];
 
     // Break word into letters and letter counts
-    const brokenDownInput = stringToCharMap(input, caseSensitive);
+    const inputCharMap = stringToCharMap(input, caseSensitive);
 
     // Go through each word in the englishWords and break it into letters and letter counts similarly
     return wordOptions.filter((word) => {
@@ -67,10 +68,10 @@ export const findWordsFromOptions = (input: string, wordOptions: string[], caseS
         // Return false immediately to optimize if the word is longer than the input as not possible to match
         if (word.length === 0 || word.length > input.length) return false;
 
-        const brokenDownWord = stringToCharMap(word, caseSensitive);
+        const wordCharMap = stringToCharMap(word, caseSensitive);
 
         // If the word from the word list has less or same amount of letters as the input word then add it to matched words. But still has to have the same letters and letter counts
-        return isCharMapContainedInCharMap(brokenDownInput, brokenDownWord);
+        return isWordCharMapContainedInInputCharMap(inputCharMap, wordCharMap);
 
     })
 }
